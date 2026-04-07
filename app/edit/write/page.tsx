@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import AdminGuard from '@/components/AdminGuard'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -12,7 +13,7 @@ const SECTIONS = [
   { value: 'column', label: '기획·칼럼' },
 ]
 
-export default function WritePage() {
+function WriteForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const editId = searchParams.get('id')
@@ -105,7 +106,6 @@ export default function WritePage() {
 
           <div className="bg-white rounded-xl border border-forest-border p-6 space-y-5">
 
-            {/* 섹션 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">섹션 *</label>
               <select name="section" value={form.section} onChange={handleChange}
@@ -114,35 +114,30 @@ export default function WritePage() {
               </select>
             </div>
 
-            {/* 제목 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">제목 *</label>
               <input name="title" value={form.title} onChange={handleChange} placeholder="기사 제목을 입력하세요"
                 className="w-full border border-forest-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-accent" />
             </div>
 
-            {/* 요약 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">요약</label>
               <textarea name="summary" value={form.summary} onChange={handleChange} rows={2} placeholder="한 줄 요약 (선택)"
                 className="w-full border border-forest-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-accent resize-none" />
             </div>
 
-            {/* 본문 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">본문</label>
               <textarea name="content" value={form.content} onChange={handleChange} rows={10} placeholder="기사 본문을 입력하세요"
                 className="w-full border border-forest-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-accent resize-y" />
             </div>
 
-            {/* 썸네일 URL */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">썸네일 URL</label>
               <input name="thumbnail_url" value={form.thumbnail_url} onChange={handleChange} placeholder="https://..."
                 className="w-full border border-forest-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-accent" />
             </div>
 
-            {/* 영상 URL (영상뉴스만) */}
             {form.section === 'video' && (
               <div>
                 <label className="block text-xs font-semibold text-forest-dark mb-1.5">유튜브 URL</label>
@@ -151,7 +146,6 @@ export default function WritePage() {
               </div>
             )}
 
-            {/* 작성자 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">작성자</label>
               <input name="author_name" value={form.author_name} onChange={handleChange} placeholder="VeryGoodNews 편집팀"
@@ -160,7 +154,6 @@ export default function WritePage() {
 
           </div>
 
-          {/* 저장 버튼 */}
           <div className="flex gap-3 mt-6 justify-end">
             <button onClick={() => handleSave('draft')} disabled={saving}
               className="px-5 py-2.5 text-sm font-semibold border border-forest-border rounded-full text-forest-muted hover:border-forest-accent hover:text-forest-dark transition-colors disabled:opacity-50">
@@ -175,5 +168,17 @@ export default function WritePage() {
         </div>
       </main>
     </AdminGuard>
+  )
+}
+
+export default function WritePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-forest-bg flex items-center justify-center">
+        <p className="text-forest-muted text-sm">로딩 중...</p>
+      </div>
+    }>
+      <WriteForm />
+    </Suspense>
   )
 }
