@@ -20,8 +20,8 @@ const SLIDES = [
     accentColor: '#4ADE80',
     image: '/images/slide1-people.jpg',
     imagePosition: 'right',
-    title: '소소하고 작은 행복을 전달하는 Very Good News',
-    titleAccent: 'Very Good News',
+    titleLine1: '소소하고 작은 행복을 전달하는',
+    titleLine2: 'Very Good News',
     sub: '세상의 따뜻한 이야기를 전합니다',
     barColor: '#4ADE80',
   },
@@ -31,8 +31,8 @@ const SLIDES = [
     accentColor: '#4ADE80',
     image: '/images/slide2-forest.jpg',
     imagePosition: 'left',
-    title: '무공해 유기농 뉴스 Very Good News',
-    titleAccent: 'Very Good News',
+    titleLine1: '무공해 유기농 뉴스',
+    titleLine2: 'Very Good News',
     sub: '자연처럼 깨끗하고 맑은 뉴스를 전합니다',
     barColor: '#4ADE80',
   },
@@ -44,13 +44,12 @@ const SLIDES = [
     imagePosition: 'center',
     leftText: {
       label: 'TODAY',
-      title: '당신이 우울하고 자극적인 뉴스에 지쳤다면',
-      accent: '지쳤다면',
+      line1: '당신이 우울하고 자극적인 뉴스에',
+      line2: '지쳤다면',
     },
     rightText: {
-      title: 'very good news',
-      titleAccent: 'very good',
-      sub: '따뜻한 소식이 기다립니다',
+      line1: 'very good news',
+      line2: '따뜻한 소식이 기다립니다',
     },
     barColor: '#f0c060',
   },
@@ -101,30 +100,20 @@ export default function Header() {
 
   const slide = SLIDES[cur]
 
-  // 슬라이드 1, 2 텍스트 렌더링
-  const renderCenterText = (s: typeof SLIDES[0]) => {
-    const accentWords = s.titleAccent?.split(' ') ?? []
-    const words = s.title?.split(' ') ?? []
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center z-10 text-center px-4">
-        <p className="font-serif font-bold text-white" style={{ fontSize: 13, lineHeight: 1.6 }}>
-          {words.map((word, wi) => {
-            const isAccent = wi >= words.length - accentWords.length
-            return (
-              <span key={wi} style={{ color: isAccent ? s.accentColor : '#fff' }}>
-                {word}{wi < words.length - 1 ? ' ' : ''}
-              </span>
-            )
-          })}
-        </p>
-        <div className="flex items-center gap-1.5 mt-2">
-          <div className="h-px" style={{ width: 12, backgroundColor: s.accentColor }} />
-          <span style={{ fontSize: 10, color: '#6EAA8A' }}>{s.sub}</span>
-          <div className="h-px" style={{ width: 12, backgroundColor: s.accentColor }} />
-        </div>
+  // 슬라이드 1, 2 텍스트
+  const renderCenterText = (s: typeof SLIDES[0]) => (
+    <div className="flex-1 flex flex-col items-center justify-center z-10 text-center px-4">
+      <p className="font-serif font-bold" style={{ fontSize: 13, lineHeight: 1.6 }}>
+        <span style={{ color: '#fff', display: 'block' }}>{s.titleLine1}</span>
+        <span style={{ color: s.accentColor, display: 'block' }}>{s.titleLine2}</span>
+      </p>
+      <div className="flex items-center gap-1.5 mt-2">
+        <div className="h-px" style={{ width: 12, backgroundColor: s.accentColor }} />
+        <span style={{ fontSize: 10, color: '#6EAA8A' }}>{s.sub}</span>
+        <div className="h-px" style={{ width: 12, backgroundColor: s.accentColor }} />
       </div>
-    )
-  }
+    </div>
+  )
 
   return (
     <header style={{ backgroundColor: '#0B2A1A' }}>
@@ -176,20 +165,19 @@ export default function Header() {
             {s.imagePosition === 'center' && s.leftText && s.rightText ? (
               <div className="flex w-full">
                 {/* 왼쪽 텍스트 */}
-                <div className="flex-1 flex flex-col justify-center pl-3 z-10 min-w-0">
-                  <span className="block font-bold mb-1" style={{ fontSize: 9, color: s.accentColor, letterSpacing: '0.1em' }}>{s.leftText.label}</span>
-                  <p className="font-serif font-bold text-white" style={{ fontSize: 11, lineHeight: 1.5 }}>
-                    {s.leftText.title.split(' ').map((word, wi, arr) => (
-                      <span key={wi} style={{ color: word === s.leftText!.accent ? s.accentColor : '#fff' }}>
-                        {word}{wi < arr.length - 1 ? ' ' : ''}
-                      </span>
-                    ))}
+                <div className="flex-1 flex flex-col justify-center items-center text-center pl-2 pr-1 z-10 min-w-0">
+                  <span className="block font-bold mb-1" style={{ fontSize: 9, color: s.accentColor, letterSpacing: '0.1em' }}>
+                    {s.leftText.label}
+                  </span>
+                  <p className="font-serif font-bold" style={{ fontSize: 11, lineHeight: 1.5 }}>
+                    <span style={{ color: '#fff', display: 'block' }}>{s.leftText.line1}</span>
+                    <span style={{ color: s.accentColor, display: 'block' }}>{s.leftText.line2}</span>
                   </p>
                 </div>
-                {/* 가운데 이미지 — 모바일 120px, 데스크톱 220px */}
+                {/* 가운데 이미지 */}
                 <div
                   className="relative overflow-hidden flex-shrink-0"
-                  style={{ width: 'clamp(110px, 30vw, 220px)' }}
+                  style={{ width: 'clamp(100px, 28vw, 220px)' }}
                 >
                   <img
                     src={s.image}
@@ -201,21 +189,13 @@ export default function Header() {
                   <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 75%, ${s.bg} 100%)` }} />
                 </div>
                 {/* 오른쪽 텍스트 */}
-                <div className="flex-1 flex flex-col justify-center items-end pr-3 z-10 text-right min-w-0">
+                <div className="flex-1 flex flex-col justify-center items-center text-center pl-1 pr-2 z-10 min-w-0">
                   <p className="font-serif font-bold" style={{ fontSize: 12, lineHeight: 1.5 }}>
-                    {s.rightText.title?.split(' ').map((word, wi, arr) => {
-                      const accentWords = s.rightText.titleAccent?.split(' ') ?? []
-                      return (
-                        <span key={wi} style={{ color: accentWords.includes(word) ? s.accentColor : '#fff' }}>
-                          {word}{wi < arr.length - 1 ? ' ' : ''}
-                        </span>
-                      )
-                    })}
+                    <span style={{ color: s.accentColor, display: 'block' }}>{s.rightText.line1}</span>
                   </p>
-                  <div className="flex items-center justify-end gap-1 mt-1">
-                    <span style={{ fontSize: 9, color: '#a08050', lineHeight: 1.4 }}>따뜻한 소식이<br />기다립니다</span>
-                    <div className="h-px flex-shrink-0" style={{ width: 12, backgroundColor: s.accentColor }} />
-                  </div>
+                  <span style={{ fontSize: 9, color: '#a08050', display: 'block', marginTop: 3 }}>
+                    {s.rightText.line2}
+                  </span>
                 </div>
               </div>
             ) : (
