@@ -186,7 +186,7 @@ export default function Header() {
                     <div className="flex-1 flex flex-col justify-center pl-6 z-10">
                       <span className="block text-xs font-bold mb-2" style={{ color: s.accentColor, letterSpacing: '0.2em' }}>{s.label}</span>
                       <p className="font-serif font-bold text-white leading-relaxed whitespace-pre-line" style={{ fontSize: 15 }}>
-                        {s.title.split('\n').map((line, li) => (
+                        {(s.title ?? '').split('\n').map((line, li) => (
                           <span key={li} style={{ color: line === s.titleAccent ? s.accentColor : '#fff', display: 'block' }}>{line}</span>
                         ))}
                       </p>
@@ -214,7 +214,7 @@ export default function Header() {
                     <div className="flex-1 flex flex-col justify-center pr-6 pl-2 z-10">
                       <span className="block text-xs font-bold mb-2" style={{ color: s.accentColor, letterSpacing: '0.2em' }}>{s.label}</span>
                       <p className="font-serif font-bold text-white leading-relaxed whitespace-pre-line" style={{ fontSize: 15 }}>
-                        {s.title.split('\n').map((line, li) => (
+                        {(s.title ?? '').split('\n').map((line, li) => (
                           <span key={li} style={{ color: line === s.titleAccent ? s.accentColor : '#fff', display: 'block' }}>{line}</span>
                         ))}
                       </p>
