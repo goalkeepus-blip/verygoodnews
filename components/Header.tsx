@@ -100,7 +100,6 @@ export default function Header() {
 
   const slide = SLIDES[cur]
 
-  // 슬라이드 1, 2 텍스트
   const renderCenterText = (s: typeof SLIDES[0]) => (
     <div className="flex-1 flex flex-col items-center justify-center z-10 text-center px-4">
       <p className="font-serif font-bold" style={{ fontSize: 13, lineHeight: 1.6 }}>
@@ -161,51 +160,38 @@ export default function Header() {
             className="absolute inset-0 flex items-stretch transition-opacity duration-1000"
             style={{ opacity: i === cur ? 1 : 0 }}
           >
-            {/* 슬라이드 3 */}
             {s.imagePosition === 'center' && s.leftText && s.rightText ? (
               <div className="flex w-full">
                 {/* 왼쪽 텍스트 */}
-                <div className="flex-1 flex flex-col justify-center items-center text-center pl-2 pr-1 z-10 min-w-0">
+                <div className="flex-1 flex flex-col justify-center items-center text-center px-2 z-10 min-w-0">
                   <span className="block font-bold mb-1" style={{ fontSize: 9, color: s.accentColor, letterSpacing: '0.1em' }}>
                     {s.leftText.label}
                   </span>
-                  <p className="font-serif font-bold" style={{ fontSize: 11, lineHeight: 1.5 }}>
+                  <p className="font-serif font-bold" style={{ fontSize: 9.5, lineHeight: 1.5, whiteSpace: 'nowrap' }}>
                     <span style={{ color: '#fff', display: 'block' }}>{s.leftText.line1}</span>
                     <span style={{ color: s.accentColor, display: 'block' }}>{s.leftText.line2}</span>
                   </p>
                 </div>
                 {/* 가운데 이미지 */}
-                <div
-                  className="relative overflow-hidden flex-shrink-0"
-                  style={{ width: 'clamp(100px, 28vw, 220px)' }}
-                >
-                  <img
-                    src={s.image}
-                    alt="슬라이드 이미지"
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: 'center 20%' }}
-                  />
+                <div className="relative overflow-hidden flex-shrink-0" style={{ width: 'clamp(100px, 28vw, 220px)' }}>
+                  <img src={s.image} alt="슬라이드 이미지" className="w-full h-full object-cover" style={{ objectPosition: 'center 20%' }} />
                   <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${s.bg}, transparent 25%, transparent 75%, ${s.bg})` }} />
                   <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 75%, ${s.bg} 100%)` }} />
                 </div>
                 {/* 오른쪽 텍스트 */}
-                <div className="flex-1 flex flex-col justify-center items-center text-center pl-1 pr-2 z-10 min-w-0">
-                  <p className="font-serif font-bold" style={{ fontSize: 12, lineHeight: 1.5 }}>
+                <div className="flex-1 flex flex-col justify-center items-center text-center px-2 z-10 min-w-0">
+                  <p className="font-serif font-bold" style={{ fontSize: 12, lineHeight: 1.5, whiteSpace: 'nowrap' }}>
                     <span style={{ color: s.accentColor, display: 'block' }}>{s.rightText.line1}</span>
                   </p>
-                  <span style={{ fontSize: 9, color: '#a08050', display: 'block', marginTop: 3 }}>
+                  <span style={{ fontSize: 9, color: '#a08050', display: 'block', marginTop: 3, whiteSpace: 'nowrap' }}>
                     {s.rightText.line2}
                   </span>
                 </div>
               </div>
             ) : (
-              /* 슬라이드 1, 2 */
               <div className="flex w-full">
                 {s.imagePosition === 'left' && (
-                  <div
-                    className="relative overflow-hidden flex-shrink-0"
-                    style={{ width: 'clamp(110px, 30vw, 240px)' }}
-                  >
+                  <div className="relative overflow-hidden flex-shrink-0" style={{ width: 'clamp(110px, 30vw, 240px)' }}>
                     <img src={s.image} alt="슬라이드 이미지" className="w-full h-full object-cover" style={{ objectPosition: 'center center' }} />
                     <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to left, ${s.bg} 0%, transparent 40%)` }} />
                     <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 70%, ${s.bg} 100%)` }} />
@@ -213,10 +199,7 @@ export default function Header() {
                 )}
                 {renderCenterText(s)}
                 {s.imagePosition === 'right' && (
-                  <div
-                    className="relative overflow-hidden flex-shrink-0"
-                    style={{ width: 'clamp(110px, 30vw, 240px)' }}
-                  >
+                  <div className="relative overflow-hidden flex-shrink-0" style={{ width: 'clamp(110px, 30vw, 240px)' }}>
                     <img src={s.image} alt="슬라이드 이미지" className="w-full h-full object-cover" style={{ objectPosition: 'center top' }} />
                     <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${s.bg} 0%, transparent 40%)` }} />
                     <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 70%, ${s.bg} 100%)` }} />
