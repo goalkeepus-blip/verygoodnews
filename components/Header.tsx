@@ -101,12 +101,13 @@ export default function Header() {
 
   const slide = SLIDES[cur]
 
+  // 슬라이드 1, 2 텍스트 렌더링
   const renderCenterText = (s: typeof SLIDES[0]) => {
     const accentWords = s.titleAccent?.split(' ') ?? []
     const words = s.title?.split(' ') ?? []
     return (
       <div className="flex-1 flex flex-col items-center justify-center z-10 text-center px-4">
-        <p className="font-serif font-bold text-white" style={{ fontSize: 15, lineHeight: 1.5 }}>
+        <p className="font-serif font-bold text-white" style={{ fontSize: 13, lineHeight: 1.6 }}>
           {words.map((word, wi) => {
             const isAccent = wi >= words.length - accentWords.length
             return (
@@ -117,9 +118,9 @@ export default function Header() {
           })}
         </p>
         <div className="flex items-center gap-1.5 mt-2">
-          <div className="h-px" style={{ width: 18, backgroundColor: s.accentColor }} />
-          <span className="text-xs" style={{ color: '#6EAA8A' }}>{s.sub}</span>
-          <div className="h-px" style={{ width: 18, backgroundColor: s.accentColor }} />
+          <div className="h-px" style={{ width: 12, backgroundColor: s.accentColor }} />
+          <span style={{ fontSize: 10, color: '#6EAA8A' }}>{s.sub}</span>
+          <div className="h-px" style={{ width: 12, backgroundColor: s.accentColor }} />
         </div>
       </div>
     )
@@ -134,7 +135,7 @@ export default function Header() {
           <span className="font-serif text-lg font-bold text-white tracking-tight">Very</span>
           <span className="font-serif text-lg font-bold tracking-tight" style={{ color: '#4ADE80' }}>Good</span>
           <span className="font-serif text-lg font-bold text-white tracking-tight">News</span>
-          <span className="text-xs ml-2" style={{ color: '#3a6a4a' }}>세상에서 가장 따뜻한 뉴스</span>
+          <span className="text-xs ml-2 hidden sm:inline" style={{ color: '#3a6a4a' }}>세상에서 가장 따뜻한 뉴스</span>
         </div>
         <div className="hidden md:flex items-center gap-3">
           <span className="text-xs" style={{ color: '#4a7a5a' }}>
@@ -171,13 +172,13 @@ export default function Header() {
             className="absolute inset-0 flex items-stretch transition-opacity duration-1000"
             style={{ opacity: i === cur ? 1 : 0 }}
           >
-            {/* 슬라이드 3: 3단 레이아웃 */}
+            {/* 슬라이드 3 */}
             {s.imagePosition === 'center' && s.leftText && s.rightText ? (
-              <>
+              <div className="flex w-full">
                 {/* 왼쪽 텍스트 */}
-                <div className="flex-1 flex flex-col justify-center pl-4 z-10 min-w-0">
-                  <span className="block text-xs font-bold mb-1.5" style={{ color: s.accentColor, letterSpacing: '0.15em' }}>{s.leftText.label}</span>
-                  <p className="font-serif font-bold text-white whitespace-nowrap" style={{ fontSize: 11, lineHeight: 1.5 }}>
+                <div className="flex-1 flex flex-col justify-center pl-3 z-10 min-w-0">
+                  <span className="block font-bold mb-1" style={{ fontSize: 9, color: s.accentColor, letterSpacing: '0.1em' }}>{s.leftText.label}</span>
+                  <p className="font-serif font-bold text-white" style={{ fontSize: 11, lineHeight: 1.5 }}>
                     {s.leftText.title.split(' ').map((word, wi, arr) => (
                       <span key={wi} style={{ color: word === s.leftText!.accent ? s.accentColor : '#fff' }}>
                         {word}{wi < arr.length - 1 ? ' ' : ''}
@@ -185,54 +186,63 @@ export default function Header() {
                     ))}
                   </p>
                 </div>
-                {/* 가운데 이미지 */}
-                <div className="relative overflow-hidden flex-shrink-0" style={{ width: 220 }}>
-                  <img src={s.image} alt="슬라이드 이미지" className="w-full h-full object-cover" style={{ objectPosition: 'center 20%' }} />
-                  <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${s.bg}, transparent 30%, transparent 70%, ${s.bg})` }} />
+                {/* 가운데 이미지 — 모바일 120px, 데스크톱 220px */}
+                <div
+                  className="relative overflow-hidden flex-shrink-0"
+                  style={{ width: 'clamp(110px, 30vw, 220px)' }}
+                >
+                  <img
+                    src={s.image}
+                    alt="슬라이드 이미지"
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: 'center 20%' }}
+                  />
+                  <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${s.bg}, transparent 25%, transparent 75%, ${s.bg})` }} />
                   <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 75%, ${s.bg} 100%)` }} />
                 </div>
                 {/* 오른쪽 텍스트 */}
-                <div className="flex-1 flex flex-col justify-center items-end pr-4 z-10 text-right min-w-0">
-                  <p className="font-serif font-bold whitespace-nowrap" style={{ fontSize: 13, lineHeight: 1.5 }}>
+                <div className="flex-1 flex flex-col justify-center items-end pr-3 z-10 text-right min-w-0">
+                  <p className="font-serif font-bold" style={{ fontSize: 12, lineHeight: 1.5 }}>
                     {s.rightText.title?.split(' ').map((word, wi, arr) => {
                       const accentWords = s.rightText.titleAccent?.split(' ') ?? []
-                      const isAccent = accentWords.includes(word)
                       return (
-                        <span key={wi} style={{ color: isAccent ? s.accentColor : '#fff' }}>
+                        <span key={wi} style={{ color: accentWords.includes(word) ? s.accentColor : '#fff' }}>
                           {word}{wi < arr.length - 1 ? ' ' : ''}
                         </span>
                       )
                     })}
                   </p>
-                  <div className="flex items-center justify-end gap-1.5 mt-2">
-                    <span className="text-xs" style={{ color: '#a08050' }}>{s.rightText.sub}</span>
-                    <div className="h-px" style={{ width: 16, backgroundColor: s.accentColor }} />
+                  <div className="flex items-center justify-end gap-1 mt-1">
+                    <span style={{ fontSize: 9, color: '#a08050', lineHeight: 1.4 }}>따뜻한 소식이<br />기다립니다</span>
+                    <div className="h-px flex-shrink-0" style={{ width: 12, backgroundColor: s.accentColor }} />
                   </div>
                 </div>
-              </>
+              </div>
             ) : (
-              <>
-                {/* 슬라이드 1, 2: 이미지 + 가운데 텍스트 */}
-                {s.imagePosition === 'right' ? (
-                  <>
-                    {renderCenterText(s)}
-                    <div className="relative overflow-hidden flex-shrink-0" style={{ width: 240 }}>
-                      <img src={s.image} alt="슬라이드 이미지" className="block object-cover" style={{ width: 240, height: 120, objectPosition: 'center top' }} />
-                      <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${s.bg} 0%, transparent 35%)` }} />
-                      <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 70%, ${s.bg} 100%)` }} />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="relative overflow-hidden flex-shrink-0" style={{ width: 240 }}>
-                      <img src={s.image} alt="슬라이드 이미지" className="block object-cover" style={{ width: 240, height: 120, objectPosition: 'center center' }} />
-                      <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to left, ${s.bg} 0%, transparent 35%)` }} />
-                      <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 70%, ${s.bg} 100%)` }} />
-                    </div>
-                    {renderCenterText(s)}
-                  </>
+              /* 슬라이드 1, 2 */
+              <div className="flex w-full">
+                {s.imagePosition === 'left' && (
+                  <div
+                    className="relative overflow-hidden flex-shrink-0"
+                    style={{ width: 'clamp(110px, 30vw, 240px)' }}
+                  >
+                    <img src={s.image} alt="슬라이드 이미지" className="w-full h-full object-cover" style={{ objectPosition: 'center center' }} />
+                    <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to left, ${s.bg} 0%, transparent 40%)` }} />
+                    <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 70%, ${s.bg} 100%)` }} />
+                  </div>
                 )}
-              </>
+                {renderCenterText(s)}
+                {s.imagePosition === 'right' && (
+                  <div
+                    className="relative overflow-hidden flex-shrink-0"
+                    style={{ width: 'clamp(110px, 30vw, 240px)' }}
+                  >
+                    <img src={s.image} alt="슬라이드 이미지" className="w-full h-full object-cover" style={{ objectPosition: 'center top' }} />
+                    <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${s.bg} 0%, transparent 40%)` }} />
+                    <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 70%, ${s.bg} 100%)` }} />
+                  </div>
+                )}
+              </div>
             )}
           </div>
         ))}
