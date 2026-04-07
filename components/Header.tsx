@@ -1,5 +1,4 @@
 // components/Header.tsx
-// VeryGoodNews 헤더 + 배너 슬라이더 컴포넌트
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -14,17 +13,14 @@ const NAV_ITEMS = [
   { label: '기획·칼럼', href: '/column' },
 ]
 
-// ── 슬라이드 데이터 ──────────────────────────────────────────
-// 실제 배포 시: image 경로를 /public/images/slide1.jpg 등으로 변경
 const SLIDES = [
   {
     id: 0,
     bg: '#0a1a10',
     accentColor: '#4ADE80',
-    label: 'VERY GOOD NEWS',
-    image: '/images/slide1-people.jpg', // 다양한 인종 사람들 사진
+    image: '/images/slide1-people.jpg',
     imagePosition: 'right',
-    title: '소소하고 작은 행복들을\n전달하는 Very Good News',
+    title: '소소하고 작은 행복을 전달하는 Very Good News',
     titleAccent: 'Very Good News',
     sub: '세상의 따뜻한 이야기를 전합니다',
     barColor: '#4ADE80',
@@ -33,10 +29,9 @@ const SLIDES = [
     id: 1,
     bg: '#071e0a',
     accentColor: '#4ADE80',
-    label: 'VERY GOOD NEWS',
-    image: '/images/slide2-forest.jpg', // 청정 자연 숲 사진
+    image: '/images/slide2-forest.jpg',
     imagePosition: 'left',
-    title: '무공해 유기농 뉴스\nVery Good News',
+    title: '무공해 유기농 뉴스 Very Good News',
     titleAccent: 'Very Good News',
     sub: '자연처럼 깨끗하고 맑은 뉴스를 전합니다',
     barColor: '#4ADE80',
@@ -45,11 +40,18 @@ const SLIDES = [
     id: 2,
     bg: '#0f0e08',
     accentColor: '#f0c060',
-    label: 'TODAY',
-    image: '/images/slide3-dogs.jpg', // 달리는 강아지들 사진
+    image: '/images/slide3-dogs.jpg',
     imagePosition: 'center',
-    leftText: { title: '당신이 우울한\n뉴스들에\n지쳤다면', accent: '지쳤다면' },
-    rightText: { lines: ['very', 'good', 'news'], accentLines: [0, 1], sub: '따뜻한 소식이 기다립니다' },
+    leftText: {
+      label: 'TODAY',
+      title: '당신이 우울하고 자극적인 뉴스에 지쳤다면',
+      accent: '지쳤다면',
+    },
+    rightText: {
+      title: 'very good news',
+      titleAccent: 'very good',
+      sub: '따뜻한 소식이 기다립니다',
+    },
     barColor: '#f0c060',
   },
 ]
@@ -99,6 +101,30 @@ export default function Header() {
 
   const slide = SLIDES[cur]
 
+  const renderCenterText = (s: typeof SLIDES[0]) => {
+    const accentWords = s.titleAccent?.split(' ') ?? []
+    const words = s.title?.split(' ') ?? []
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center z-10 text-center px-4">
+        <p className="font-serif font-bold text-white" style={{ fontSize: 15, lineHeight: 1.5 }}>
+          {words.map((word, wi) => {
+            const isAccent = wi >= words.length - accentWords.length
+            return (
+              <span key={wi} style={{ color: isAccent ? s.accentColor : '#fff' }}>
+                {word}{wi < words.length - 1 ? ' ' : ''}
+              </span>
+            )
+          })}
+        </p>
+        <div className="flex items-center gap-1.5 mt-2">
+          <div className="h-px" style={{ width: 18, backgroundColor: s.accentColor }} />
+          <span className="text-xs" style={{ color: '#6EAA8A' }}>{s.sub}</span>
+          <div className="h-px" style={{ width: 18, backgroundColor: s.accentColor }} />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <header style={{ backgroundColor: '#0B2A1A' }}>
 
@@ -127,7 +153,6 @@ export default function Header() {
             </>
           )}
         </div>
-        {/* 모바일 햄버거 */}
         <button className="md:hidden p-1" onClick={() => setMenuOpen(!menuOpen)}>
           <div className="flex flex-col gap-1">
             {[0,1,2].map(i => (
@@ -146,15 +171,17 @@ export default function Header() {
             className="absolute inset-0 flex items-stretch transition-opacity duration-1000"
             style={{ opacity: i === cur ? 1 : 0 }}
           >
-            {/* 슬라이드 3: 3단 (왼쪽 텍스트 | 가운데 이미지 | 오른쪽 텍스트) */}
+            {/* 슬라이드 3: 3단 레이아웃 */}
             {s.imagePosition === 'center' && s.leftText && s.rightText ? (
               <>
                 {/* 왼쪽 텍스트 */}
-                <div className="flex-1 flex flex-col justify-center pl-6 z-10 min-w-0">
-                  <span className="block text-xs font-bold mb-2" style={{ color: s.accentColor, letterSpacing: '0.15em' }}>{s.label}</span>
-                  <p className="font-serif font-bold text-white leading-relaxed text-sm whitespace-pre-line">
-                    {s.leftText.title.split('\n').map((line, li) => (
-                      <span key={li} style={{ color: line === s.leftText!.accent ? s.accentColor : '#fff', display: 'block' }}>{line}</span>
+                <div className="flex-1 flex flex-col justify-center pl-4 z-10 min-w-0">
+                  <span className="block text-xs font-bold mb-1.5" style={{ color: s.accentColor, letterSpacing: '0.15em' }}>{s.leftText.label}</span>
+                  <p className="font-serif font-bold text-white whitespace-nowrap" style={{ fontSize: 11, lineHeight: 1.5 }}>
+                    {s.leftText.title.split(' ').map((word, wi, arr) => (
+                      <span key={wi} style={{ color: word === s.leftText!.accent ? s.accentColor : '#fff' }}>
+                        {word}{wi < arr.length - 1 ? ' ' : ''}
+                      </span>
                     ))}
                   </p>
                 </div>
@@ -165,37 +192,30 @@ export default function Header() {
                   <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 75%, ${s.bg} 100%)` }} />
                 </div>
                 {/* 오른쪽 텍스트 */}
-                <div className="flex-1 flex flex-col justify-center pr-6 z-10 text-right min-w-0">
-                  <p className="font-serif font-bold leading-tight whitespace-nowrap" style={{ fontSize: 18 }}>
-                    {s.rightText.lines.map((line, li) => (
-                      <span key={li} style={{ color: s.rightText!.accentLines.includes(li) ? s.accentColor : '#fff', display: 'block' }}>{line}</span>
-                    ))}
+                <div className="flex-1 flex flex-col justify-center items-end pr-4 z-10 text-right min-w-0">
+                  <p className="font-serif font-bold whitespace-nowrap" style={{ fontSize: 13, lineHeight: 1.5 }}>
+                    {s.rightText.title?.split(' ').map((word, wi, arr) => {
+                      const accentWords = s.rightText.titleAccent?.split(' ') ?? []
+                      const isAccent = accentWords.includes(word)
+                      return (
+                        <span key={wi} style={{ color: isAccent ? s.accentColor : '#fff' }}>
+                          {word}{wi < arr.length - 1 ? ' ' : ''}
+                        </span>
+                      )
+                    })}
                   </p>
                   <div className="flex items-center justify-end gap-1.5 mt-2">
                     <span className="text-xs" style={{ color: '#a08050' }}>{s.rightText.sub}</span>
-                    <div className="w-4 h-px rounded" style={{ backgroundColor: s.accentColor }} />
+                    <div className="h-px" style={{ width: 16, backgroundColor: s.accentColor }} />
                   </div>
                 </div>
               </>
             ) : (
               <>
-                {/* 슬라이드 1, 2: 이미지 + 텍스트 좌우 배치 */}
+                {/* 슬라이드 1, 2: 이미지 + 가운데 텍스트 */}
                 {s.imagePosition === 'right' ? (
                   <>
-                    {/* 왼쪽 텍스트 */}
-                    <div className="flex-1 flex flex-col justify-center pl-6 z-10">
-                      <span className="block text-xs font-bold mb-2" style={{ color: s.accentColor, letterSpacing: '0.2em' }}>{s.label}</span>
-                      <p className="font-serif font-bold text-white leading-relaxed whitespace-pre-line" style={{ fontSize: 15 }}>
-                        {(s.title ?? '').split('\n').map((line, li) => (
-                          <span key={li} style={{ color: line === s.titleAccent ? s.accentColor : '#fff', display: 'block' }}>{line}</span>
-                        ))}
-                      </p>
-                      <div className="flex items-center gap-1.5 mt-2">
-                        <div className="h-px rounded" style={{ width: 18, backgroundColor: s.accentColor }} />
-                        <span className="text-xs" style={{ color: '#6EAA8A' }}>{s.sub}</span>
-                      </div>
-                    </div>
-                    {/* 오른쪽 이미지 */}
+                    {renderCenterText(s)}
                     <div className="relative overflow-hidden flex-shrink-0" style={{ width: 240 }}>
                       <img src={s.image} alt="슬라이드 이미지" className="block object-cover" style={{ width: 240, height: 120, objectPosition: 'center top' }} />
                       <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to right, ${s.bg} 0%, transparent 35%)` }} />
@@ -204,25 +224,12 @@ export default function Header() {
                   </>
                 ) : (
                   <>
-                    {/* 왼쪽 이미지 */}
                     <div className="relative overflow-hidden flex-shrink-0" style={{ width: 240 }}>
                       <img src={s.image} alt="슬라이드 이미지" className="block object-cover" style={{ width: 240, height: 120, objectPosition: 'center center' }} />
                       <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to left, ${s.bg} 0%, transparent 35%)` }} />
                       <div className="absolute inset-0 z-10" style={{ background: `linear-gradient(to bottom, ${s.bg} 0%, transparent 25%, transparent 70%, ${s.bg} 100%)` }} />
                     </div>
-                    {/* 오른쪽 텍스트 */}
-                    <div className="flex-1 flex flex-col justify-center pr-6 pl-2 z-10">
-                      <span className="block text-xs font-bold mb-2" style={{ color: s.accentColor, letterSpacing: '0.2em' }}>{s.label}</span>
-                      <p className="font-serif font-bold text-white leading-relaxed whitespace-pre-line" style={{ fontSize: 15 }}>
-                        {(s.title ?? '').split('\n').map((line, li) => (
-                          <span key={li} style={{ color: line === s.titleAccent ? s.accentColor : '#fff', display: 'block' }}>{line}</span>
-                        ))}
-                      </p>
-                      <div className="flex items-center gap-1.5 mt-2">
-                        <div className="h-px rounded" style={{ width: 18, backgroundColor: s.accentColor }} />
-                        <span className="text-xs" style={{ color: '#6EAA8A' }}>{s.sub}</span>
-                      </div>
-                    </div>
+                    {renderCenterText(s)}
                   </>
                 )}
               </>
@@ -230,10 +237,8 @@ export default function Header() {
           </div>
         ))}
 
-        {/* 진행바 */}
         <div className="absolute bottom-0 left-0 h-0.5 z-20 transition-all" style={{ width: `${prog}%`, backgroundColor: slide.barColor }} />
 
-        {/* 도트 인디케이터 */}
         <div className="absolute bottom-2 right-3 flex gap-1.5 z-20">
           {SLIDES.map((s, i) => (
             <button
