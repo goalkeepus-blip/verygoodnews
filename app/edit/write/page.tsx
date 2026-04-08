@@ -25,6 +25,7 @@ function WriteForm() {
     content: '',
     thumbnail_url: '',
     video_url: '',
+    embed_code: '',
     author_name: '',
     status: 'published',
   })
@@ -43,6 +44,7 @@ function WriteForm() {
           content: data.content ?? '',
           thumbnail_url: data.thumbnail_url ?? '',
           video_url: data.video_url ?? '',
+          embed_code: data.embed_code ?? '',
           author_name: data.author_name ?? '',
           status: data.status,
         })
@@ -66,6 +68,7 @@ function WriteForm() {
       content: form.content.trim() || null,
       thumbnail_url: form.thumbnail_url.trim() || null,
       video_url: form.video_url.trim() || null,
+      embed_code: form.embed_code.trim() || null,
       author_name: form.author_name.trim() || 'VeryGoodNews 편집팀',
       status,
       published_at: status === 'published' ? new Date().toISOString() : null,
@@ -106,6 +109,7 @@ function WriteForm() {
 
           <div className="bg-white rounded-xl border border-forest-border p-6 space-y-5">
 
+            {/* 섹션 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">섹션 *</label>
               <select name="section" value={form.section} onChange={handleChange}
@@ -114,30 +118,35 @@ function WriteForm() {
               </select>
             </div>
 
+            {/* 제목 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">제목 *</label>
               <input name="title" value={form.title} onChange={handleChange} placeholder="기사 제목을 입력하세요"
                 className="w-full border border-forest-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-accent" />
             </div>
 
+            {/* 요약 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">요약</label>
               <textarea name="summary" value={form.summary} onChange={handleChange} rows={2} placeholder="한 줄 요약 (선택)"
                 className="w-full border border-forest-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-accent resize-none" />
             </div>
 
+            {/* 본문 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">본문</label>
               <textarea name="content" value={form.content} onChange={handleChange} rows={10} placeholder="기사 본문을 입력하세요"
                 className="w-full border border-forest-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-accent resize-y" />
             </div>
 
+            {/* 썸네일 URL */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">썸네일 URL</label>
               <input name="thumbnail_url" value={form.thumbnail_url} onChange={handleChange} placeholder="https://..."
                 className="w-full border border-forest-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-forest-accent" />
             </div>
 
+            {/* 유튜브 URL (영상뉴스만) */}
             {form.section === 'video' && (
               <div>
                 <label className="block text-xs font-semibold text-forest-dark mb-1.5">유튜브 URL</label>
@@ -146,6 +155,31 @@ function WriteForm() {
               </div>
             )}
 
+            {/* SNS Embed 코드 (해외뉴스일 때 강조) */}
+            <div>
+              <label className="block text-xs font-semibold text-forest-dark mb-1">
+                SNS Embed 코드
+                {form.section === 'world' && (
+                  <span className="ml-2 text-[10px] font-normal bg-forest-dark text-forest-accent px-2 py-0.5 rounded-full">
+                    해외뉴스 추천
+                  </span>
+                )}
+              </label>
+              <p className="text-[11px] text-forest-muted mb-1.5">
+                Instagram · Twitter/X · Facebook 공식 embed 코드를 붙여넣으세요 (선택)
+              </p>
+              <textarea
+                name="embed_code"
+                value={form.embed_code}
+                onChange={handleChange}
+                rows={4}
+                placeholder={`Instagram: <blockquote class="instagram-media" ...>\nTwitter: <blockquote class="twitter-tweet" ...>`}
+                className="w-full border border-forest-border rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-forest-accent resize-y"
+                style={{ color: '#0B2A1A' }}
+              />
+            </div>
+
+            {/* 작성자 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1.5">작성자</label>
               <input name="author_name" value={form.author_name} onChange={handleChange} placeholder="VeryGoodNews 편집팀"
@@ -154,6 +188,7 @@ function WriteForm() {
 
           </div>
 
+          {/* 저장 버튼 */}
           <div className="flex gap-3 mt-6 justify-end">
             <button onClick={() => handleSave('draft')} disabled={saving}
               className="px-5 py-2.5 text-sm font-semibold border border-forest-border rounded-full text-forest-muted hover:border-forest-accent hover:text-forest-dark transition-colors disabled:opacity-50">

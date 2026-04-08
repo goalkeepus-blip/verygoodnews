@@ -1,8 +1,7 @@
 // app/article/[id]/page.tsx
-// 기사 상세 페이지
-
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 import { supabaseAdmin } from '@/lib/supabase-server'
 import AdSlot from '@/components/AdSlot'
 
@@ -14,6 +13,7 @@ interface Article {
   content: string | null
   thumbnail_url: string | null
   video_url: string | null
+  embed_code: string | null
   published_at: string | null
   view_count: number
   author_name: string | null
@@ -54,6 +54,13 @@ function getYoutubeId(url: string | null): string | null {
   return m ? m[1] : null
 }
 
+function getEmbedType(code: string | null): 'instagram' | 'twitter' | 'other' | null {
+  if (!code) return null
+  if (code.includes('instagram-media')) return 'instagram'
+  if (code.includes('twitter-tweet') || code.includes('twitter.com')) return 'twitter'
+  return 'other'
+}
+
 function RelatedCard({ article }: { article: Article }) {
   return (
     <Link
@@ -80,7 +87,6 @@ function RelatedCard({ article }: { article: Article }) {
 }
 
 export default async function ArticlePage({ params }: { params: { id: string } }) {
-  // 기사 조회 + 조회수 증가
   const { data: articleData } = await supabaseAdmin
     .from('articles')
     .select('*')
@@ -93,16 +99,14 @@ export default async function ArticlePage({ params }: { params: { id: string } }
 
   const article = articleData as Article
 
-  // 조회수 증가
   await supabaseAdmin
     .from('articles')
     .update({ view_count: article.view_count + 1 })
     .eq('id', params.id)
 
-  // 관련 기사 (같은 섹션 최신 3건)
   const { data: relatedData } = await supabaseAdmin
     .from('articles')
-    .select('id, section, title, summary, thumbnail_url, published_at, view_count, author_name, video_url, content')
+    .select('id, section, title, summary, thumbnail_url, published_at, view_count, author_name, video_url, content, embed_code')
     .eq('section', article.section)
     .eq('status', 'published')
     .eq('is_deleted', false)
@@ -110,7 +114,6 @@ export default async function ArticlePage({ params }: { params: { id: string } }
     .order('published_at', { ascending: false })
     .limit(3)
 
-  // 광고
   const { data: adData } = await supabaseAdmin
     .from('ads')
     .select('*')
@@ -120,6 +123,7 @@ export default async function ArticlePage({ params }: { params: { id: string } }
   const related = (relatedData ?? []) as Article[]
   const ad = adData as Ad | null
   const ytId = getYoutubeId(article.video_url)
+  const embedType = getEmbedType(article.embed_code)
 
   return (
     <main className="min-h-screen bg-forest-bg">
@@ -198,6 +202,38 @@ export default async function ArticlePage({ params }: { params: { id: string } }
               )}
             </div>
 
+            {/* SNS Embed 섹션 */}
+            {article.embed_code && (
+              <div className="px-6 md:px-8 pb-8 border-t border-forest-border pt-6">
+                <p className="text-[10px] font-bold tracking-widest text-forest-accent uppercase mb-4">
+                  원문 SNS 게시물
+                </p>
+                <div
+                  className="flex justify-center"
+                  dangerouslySetInnerHTML={{ __html: article.embed_code }}
+                />
+                {/* Instagram embed 스크립트 */}
+                {embedType === 'instagram' && (
+                  <Script
+                    src="https://www.instagram.com/embed.js"
+                    strategy="lazyOnload"
+                    onLoad={() => {
+                      if (typeof window !== 'undefined' && (window as any).instgrm) {
+                        (window as any).instgrm.Embeds.process()
+                      }
+                    }}
+                  />
+                )}
+                {/* Twitter/X embed 스크립트 */}
+                {embedType === 'twitter' && (
+                  <Script
+                    src="https://platform.twitter.com/widgets.js"
+                    strategy="lazyOnload"
+                  />
+                )}
+              </div>
+            )}
+
             {/* 하단 네비 */}
             <div className="px-6 md:px-8 pb-6 pt-2 border-t border-forest-border">
               <Link
@@ -211,14 +247,10 @@ export default async function ArticlePage({ params }: { params: { id: string } }
 
           {/* 사이드바 */}
           <aside className="lg:sticky lg:top-24 self-start space-y-6">
-
-            {/* 광고 */}
             <div>
               <p className="text-[10px] tracking-[0.15em] text-forest-muted uppercase mb-2">Advertisement</p>
               <AdSlot ad={ad} fallbackClassName="min-h-[250px]" />
             </div>
-
-            {/* 관련 기사 */}
             {related.length > 0 && (
               <div className="bg-white rounded-xl p-4 border border-forest-border shadow-sm">
                 <div className="flex items-baseline gap-2 mb-3 pb-2 border-b border-forest-border">
@@ -230,8 +262,6 @@ export default async function ArticlePage({ params }: { params: { id: string } }
                 </div>
               </div>
             )}
-
-            {/* 섹션 바로가기 */}
             <div className="bg-white rounded-xl p-4 border border-forest-border shadow-sm">
               <p className="text-[10px] font-bold tracking-widest text-forest-accent uppercase mb-3">MORE NEWS</p>
               <div className="space-y-2">
