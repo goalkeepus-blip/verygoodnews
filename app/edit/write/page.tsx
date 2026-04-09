@@ -61,28 +61,43 @@ function WriteForm() {
     if (!form.title.trim()) { alert('제목을 입력하세요.'); return }
     setSaving(true)
 
-    const payload = {
-      section: form.section,
-      title: form.title.trim(),
-      summary: form.summary.trim() || null,
-      content: form.content.trim() || null,
-      thumbnail_url: form.thumbnail_url.trim() || null,
-      video_url: form.video_url.trim() || null,
-      embed_code: form.embed_code.trim() || null,
-      author_name: form.author_name.trim() || 'VeryGoodNews 편집팀',
-      status,
-      published_at: status === 'published' ? new Date().toISOString() : null,
-      is_deleted: false,
-    }
+    try {
+      const payload = {
+        section: form.section,
+        title: form.title.trim(),
+        summary: form.summary.trim() || null,
+        content: form.content.trim() || null,
+        thumbnail_url: form.thumbnail_url.trim() || null,
+        video_url: form.video_url.trim() || null,
+        embed_code: form.embed_code.trim() || null,
+        author_name: form.author_name.trim() || 'VeryGoodNews 편집팀',
+        status,
+        published_at: status === 'published' ? new Date().toISOString() : null,
+        is_deleted: false,
+      }
 
-    if (editId) {
-      await supabase.from('articles').update(payload).eq('id', editId)
-    } else {
-      await supabase.from('articles').insert(payload)
-    }
+      let error
+      if (editId) {
+        const result = await supabase.from('articles').update(payload).eq('id', editId)
+        error = result.error
+      } else {
+        const result = await supabase.from('articles').insert(payload)
+        error = result.error
+      }
 
-    setSaving(false)
-    router.push('/edit')
+      if (error) {
+        console.error('저장 오류:', error)
+        alert('저장 중 오류가 발생했습니다: ' + error.message)
+        setSaving(false)
+        return
+      }
+
+      router.push('/edit')
+    } catch (e) {
+      console.error('예외 발생:', e)
+      alert('저장 중 예외가 발생했습니다.')
+      setSaving(false)
+    }
   }
 
   if (loadingEdit) {
@@ -155,7 +170,7 @@ function WriteForm() {
               </div>
             )}
 
-            {/* SNS Embed 코드 (해외뉴스일 때 강조) */}
+            {/* SNS Embed 코드 */}
             <div>
               <label className="block text-xs font-semibold text-forest-dark mb-1">
                 SNS Embed 코드
