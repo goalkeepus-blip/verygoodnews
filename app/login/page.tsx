@@ -3,6 +3,7 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 function LoginForm() {
   const router = useRouter()
@@ -20,16 +21,16 @@ function LoginForm() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error)
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          setError('이메일 또는 비밀번호가 올바르지 않습니다.')
+        } else if (error.message.includes('Email not confirmed')) {
+          setError('이메일 인증이 필요합니다. 받은 편지함을 확인해주세요.')
+        } else {
+          setError(error.message)
+        }
         return
       }
 
